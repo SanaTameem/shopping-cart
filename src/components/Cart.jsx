@@ -1,21 +1,22 @@
-import React, { useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { removeFromCart } from '../redux/Products/ProductsSlice';
+import React from 'react';
+import { useSelector } from 'react-redux';
+// import { removeFromCart } from '../redux/Products/ProductsSlice';
+import CartItem from './CartItem';
 
 function Cart() {
-  const [quantity, setQuantity] = useState(1);
-  const decreaseAmount = () => {
-    if (quantity > 1) {
-      setQuantity(quantity - 1);
-    }
-  };
-  const increaseAmount = () => {
-    setQuantity(quantity + 1);
-  };
-
-  const dispatch = useDispatch();
+  // const dispatch = useDispatch();
   const allProducts = useSelector((state) => state.product.products);
   const addedToCartProduct = allProducts.filter((item) => item.addedToCart === true);
+  // const [cartTotal, setCartTotal] = useState(0);
+
+  // useEffect(() => {
+  //   const newCartTotal = addedToCartProduct.reduce(
+  //     (total, item) => total + (item.price), 0,
+  //   );
+  //   setCartTotal(newCartTotal);
+  // }, [addedToCartProduct]);
+
+  localStorage.setItem('addedToCart', JSON.stringify(addedToCartProduct));
   return (
     <section className="cart-container">
       {addedToCartProduct.length === 0 ? (
@@ -23,27 +24,14 @@ function Cart() {
           <h2 className="empty-card-text">Your card is empty!</h2>
         </div>
       ) : (
-        addedToCartProduct.map((item) => (
-          <div key={item.id} className="cart-item">
-            <div className="cart-item-img-container">
-              <img src={item.img} alt={item.name} />
-            </div>
-            <div className="cart-item-info-container">
-              <p className="cart-item-name">{item.name}</p>
-              <p className="price-per-item">{`Per Item Rp. ${item.price}`}</p>
-            </div>
-            <div className="counter-container">
-              <button type="button" className="decrease-amount-btn" onClick={decreaseAmount}>-</button>
-              <input type="number" className="quantity-input" value={quantity} />
-              <button type="button" className="increase-amount-btn" onClick={increaseAmount}>+</button>
-            </div>
-            <p className="cart-item-total-price">
-              Total Rp.
-              {item.price * quantity}
-            </p>
-            <button type="button" className="remove-btn" onClick={() => dispatch(removeFromCart(item.id))}>Remove</button>
-          </div>
-        ))
+        <>
+          {addedToCartProduct.map((item) => (
+            <CartItem key={item.id} item={item} />
+          ))}
+          {/* <div className="total-amount-container">
+            <h2>{cartTotal}</h2>
+          </div> */}
+        </>
       )}
     </section>
   );
