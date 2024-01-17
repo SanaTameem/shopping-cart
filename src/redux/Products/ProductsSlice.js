@@ -17,8 +17,10 @@ export const fetchProduct = createAsyncThunk('products/fetchProducts', async () 
 export const addToCart = createAsyncThunk('products/addToCart', (id) => id);
 export const removeFromCart = createAsyncThunk('products/removeFromCart', (id) => id);
 
+const productsFromLocalStorage = localStorage.getItem('allProducts') !== null ? JSON.parse(localStorage.getItem('allProducts')) : [];
+
 const initialState = {
-  products: [],
+  products: productsFromLocalStorage,
   error: null,
   isLoading: false,
 };
@@ -45,6 +47,7 @@ const productsSlice = createSlice({
         product.id === id ? { ...product, addedToCart: true } : product
       ));
       state.products = newState;
+      localStorage.setItem('allProducts', JSON.stringify(state.products));
     });
     builder.addCase(removeFromCart.fulfilled, (state, action) => {
       state.isLoading = false;
@@ -53,7 +56,13 @@ const productsSlice = createSlice({
         product.id === id ? { ...product, addedToCart: false } : product
       ));
       state.products = newState;
+      localStorage.setItem('allProducts', JSON.stringify(state.products));
+      localStorage.removeItem(`quantity-${id}`);
     });
+    // builder.addCase(fetchProductsFromLocalStorage.fulfilled, (state, action) => {
+    //   state.products = action.payload;
+    //   state.isLoading = false;
+    // });
   },
 });
 
