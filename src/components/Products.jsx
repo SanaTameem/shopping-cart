@@ -5,13 +5,17 @@ import { fetchProduct, addToCart } from '../redux/Products/ProductsSlice';
 function Products() {
   const dispatch = useDispatch();
   const allProducts = useSelector((state) => state.product.products);
-  // const [product, setProduct] = useState([]);
 
   useEffect(() => {
     if (allProducts.length === 0) {
       dispatch(fetchProduct());
     }
   }, [dispatch]);
+
+  useEffect(() => {
+    localStorage.setItem('allProducts', JSON.stringify(allProducts));
+  }, [allProducts]);
+
   return (
     <section className="products-container">
       {allProducts.map((item) => (
